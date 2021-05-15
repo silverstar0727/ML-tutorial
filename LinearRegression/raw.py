@@ -1,27 +1,37 @@
-import Model
-
 n_samples = 100
-n_epochs = 30
 
 # sample data
 X_train = [i for i in range(n_samples)]
 y_train = [3*X_train[i] for i in range(n_samples)]
 
 # cost
-def cost(y_pred: float, y_true: float) -> float:
+def cost(y_pred, y_true):
     cost = 0
     for i in range(n_samples):
         cost += ((y_pred[i] - y_true[i])**2)/n_samples
     return cost
 
+# define the model
+class Model():
+    def __init__(self, w):
+       self.w = w
+    
+    def forward(self, input):
+        return self.w*input 
+
 # gradient
-def gradient(w: float, cost: float) -> float:
+def gradient(w, cost , X, y, n_samples):
     grad = 0
     model = Model(w)
     for i in range(n_samples):
-        grad += 2 * (model.forward(X_train[i]) - y_train[i]) * X_train[i]
+        grad += 2 * (model.forward(X[i]) - y[i]) * X[i]
     grad = grad / n_samples
-    return grad
+    cost()
+    return grad, cost
     
-for i in range(n_samples):
+if __init__ == "__main__":
+    w = 4
+    iters = 100
     
+    for i in range(iters):
+        w -= gradient(w, cost())
