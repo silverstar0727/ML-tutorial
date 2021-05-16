@@ -1,11 +1,7 @@
-n_samples = 100
-
-# sample data
-X_train = [i for i in range(n_samples)]
-y_train = [3*X_train[i] for i in range(n_samples)]
+import argparse
 
 # cost
-def cost(y_pred, y_true):
+def cost(n_samples, y_pred, y_true):
     cost = 0
     for i in range(n_samples):
         cost += ((y_pred[i] - y_true[i])**2)/n_samples
@@ -30,8 +26,24 @@ def gradient(w, cost , X, y, n_samples):
     return grad, cost
     
 if __init__ == "__main__":
-    w = 4
-    iters = 100
-    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("n_samples", default=100)
+    parser.add_argument("train_input_path", default=None)
+    parser.add_argument("initial_weight", default=4)
+    parser.add_argument("learning_rate", default=0.01)
+    parser.add_argument("iterations", default=100)
+
+    args = parser.parse_args()
+    n_samples = args.n_samples
+    train_input_path = args.train_input_path
+    w = args.initial_weight
+    lr = args.learning_rate
+    iters = args.iterations
+
+    if train_input_path == None:
+        # sample data
+        X_train = [i for i in range(n_samples)]
+        y_train = [3*X_train[i] for i in range(n_samples)]
+
     for i in range(iters):
         w -= gradient(w, cost())
