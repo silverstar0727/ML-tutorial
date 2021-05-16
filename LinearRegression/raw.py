@@ -1,11 +1,6 @@
 import argparse
-
-# cost
-def cost(n_samples, y_pred, y_true):
-    cost = 0
-    for i in range(n_samples):
-        cost += ((y_pred[i] - y_true[i])**2)/n_samples
-    return cost
+import numpy as np
+import pandas as pd
 
 # define the model
 class Model():
@@ -15,35 +10,44 @@ class Model():
     def forward(self, input):
         return self.w*input 
 
+# cost
+def cost(y_pred, y_true):
+    cost = (y_pred - y_true)**2 / len(y_true)
+    return sum(cost)
+
 # gradient
-def gradient(w, cost , X, y, n_samples):
-    grad = 0
-    model = Model(w)
-    for i in range(n_samples):
-        grad += 2 * (model.forward(X[i]) - y[i]) * X[i]
-    grad = grad / n_samples
-    cost()
-    return grad, cost
+def gradient(x, y_pred, y_true):
+    grad = (2*(y_pred - y_true)*x) / len(y_true)
+    return sum(grad)
     
-if __init__ == "__main__":
+if __name__ == "__main__":
+    # setting arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("n_samples", default=100)
-    parser.add_argument("train_input_path", default=None)
+    parser.add_argument("train_input_path", default="train_data.csv") # it must be csv file
     parser.add_argument("initial_weight", default=4)
     parser.add_argument("learning_rate", default=0.01)
     parser.add_argument("iterations", default=100)
 
     args = parser.parse_args()
-    n_samples = args.n_samples
     train_input_path = args.train_input_path
-    w = args.initial_weight
-    lr = args.learning_rate
-    iters = args.iterations
+    w = float(args.initial_weight)
+    lr = float(args.learning_rate)
+    iters = int(args.iterations)
 
-    if train_input_path == None:
-        # sample data
-        X_train = [i for i in range(n_samples)]
-        y_train = [3*X_train[i] for i in range(n_samples)]
+    data = pd.read_csv(train_input_path)
+    X_train = np.array(data['X_train'])
+    y_train = np.array(data['y_train'])
 
+
+    costs = []
+    grads = []
     for i in range(iters):
-        w -= gradient(w, cost())
+        model = Model(w)
+        y_pred = model.forward(X_train)
+        grad = gradient(X_train, y_pred, y_train)
+        w -= lr*grad
+
+        grads.append(grad)
+        costs.append(cost(y_pred, y_train))
+
+    print(costs)
